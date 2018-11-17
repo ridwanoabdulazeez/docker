@@ -1,5 +1,5 @@
-FROM centos:latest
-RUN yum -y update
+#FROM centos:latest
+#:wqRUN yum -y update
 # Copyright (c) Jupyter Development Team.
 # Distributed under the terms of the Modified BSD License.
 
