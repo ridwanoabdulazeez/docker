@@ -24,11 +24,11 @@ RUN yum -y install  wget \
     sudo \
     locales \
     fonts-liberation \
- && apt-get clean \
+ #&& apt-get clean \
  && rm -rf /var/lib/apt/lists/*
 
-RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
-    locale-gen
+RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen
+#    locale-gen
 
 # Configure environment
 ENV CONDA_DIR=/opt/conda \
@@ -39,7 +39,7 @@ ENV CONDA_DIR=/opt/conda \
     LC_ALL=en_US.UTF-8 \
     LANG=en_US.UTF-8 \
     LANGUAGE=en_US.UTF-8
-ENV PATH=$CONDA_DIR/bin:$PATH 
+ENV PATH=$CONDA_DIR/bin:$PATH
 #    HOME=/home/$NB_USER
 
 #ADD fix-permissions /usr/local/bin/fix-permissions
@@ -47,8 +47,8 @@ ENV PATH=$CONDA_DIR/bin:$PATH
 # and make sure these dirs are writable by the `users` group.
 RUN  useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p $CONDA_DIR && \
-    chown $NB_USER:$NB_GID $CONDA_DIR && \
-#    chmod g+w /etc/passwd 
+    chown $NB_USER:$NB_GID $CONDA_DIR
+#    chmod g+w /etc/passwd
 #    fix-permissions $HOME && \
 #   fix-permissions $CONDA_DIR
 
@@ -71,16 +71,16 @@ RUN cd /tmp && \
     $CONDA_DIR/bin/conda install --quiet --yes conda="${MINICONDA_VERSION%.*}.*" && \
     $CONDA_DIR/bin/conda update --all --quiet --yes && \
     conda clean -tipsy && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.cache/yarn
 #   fix-permissions $CONDA_DIR && \
 #    fix-permissions /home/$NB_USER
 
 # Install Tini
 RUN conda install --quiet --yes 'tini=0.18.0' && \
     conda list tini | grep tini | tr -s ' ' | cut -d ' ' -f 1,2 >> $CONDA_DIR/conda-meta/pinned && \
-    conda clean -tipsy && \
-    fix-permissions $CONDA_DIR && \
-    fix-permissions /home/$NB_USER
+    conda clean -tipsy
+#    fix-permissions $CONDA_DIR && \
+#    fix-permissions /home/$NB_USER
 
 # Install Jupyter Notebook, Lab, and Hub
 # Generate a notebook server config
@@ -97,14 +97,14 @@ RUN conda install --quiet --yes \
     npm cache clean --force && \
     jupyter notebook --generate-config && \
     rm -rf $CONDA_DIR/share/jupyter/lab/staging && \
-    rm -rf /home/$NB_USER/.cache/yarn && \
+    rm -rf /home/$NB_USER/.cache/yarn
 #    fix-permissions $CONDA_DIR && \
  #   fix-permissions /home/$NB_USER
 
 USER root
 
 EXPOSE 8888
-WORKDIR $HOME
+#WORKDIR $HOME
 
 # Configure container startup
 #ENTRYPOINT ["tini", "-g", "--"]
@@ -118,5 +118,5 @@ WORKDIR $HOME
 #RUN fix-permissions /etc/jupyter/
 
 # Switch back to jovyan to avoid accidental container runs as root
-USER $NB_UID
-CMD ["Jupyterhub"]
+#USER $NB_UID
+CMD ["jupyterhub"]
